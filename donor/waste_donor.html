@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate Waste Food</title>
+    <link rel="stylesheet" href="donor.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .charges-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .payment-section {
+            margin-top: 15px;
+        }
+
+        .total-amount {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #dc3545;
+            margin: 10px 0;
+        }
+
+        .upi-details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .upi-info {
+            margin-bottom: 15px;
+        }
+
+        .upi-info p {
+            margin: 5px 0;
+        }
+
+        .upi-info p:first-child {
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .upi-info p:nth-child(2) {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .qr-code img {
+            width: 220px;
+            height: 220px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Discard Waste Food</h2>
+        <div class="charges-info">
+            <p>Waste Disposal Charges: ₹10 per kg</p>
+        </div>
+        
+        <form id="wasteDonationForm">
+            <label for="donorName">Donor Name:</label>
+            <input type="text" id="donorName" name="donor_name" required>
+
+            <label for="contactNumber">Contact Number:</label>
+            <input type="tel" 
+                   id="contactNumber" 
+                   name="contact_number" 
+                   required 
+                   maxlength="10" 
+                   pattern="[6-9][0-9]{9}" 
+                   placeholder="Enter 10-digit phone number">
+            <div class="error-message" id="phone-error" style="display: none;">
+                Please enter a valid 10-digit mobile number starting with 6-9
+            </div>
+
+            <label for="email">Email:</label>
+            <input type="email" 
+                   id="email" 
+                   name="email" 
+                   required 
+                   placeholder="Enter your email address">
+            <div class="error-message" id="email-error" style="display: none;">
+                Please enter a valid email address
+            </div>
+
+            <label for="foodType">Food Type:</label>
+            <select id="foodType" name="food_type" required>
+                <option value="">Select Food Type</option>
+                <option value="Expired Vegetables">Expired Vegetables</option>
+                <option value="Expired Fruits">Expired Fruits</option>
+                <option value="Expired Cooked Food">Expired Cooked Food</option>
+                <option value="Expired Packed Food">Expired Packed Food</option>
+                <option value="Expired Bakery Items">Expired Bakery Items</option>
+            </select>
+
+            <label for="quantity">Quantity (in kg):</label>
+            <input type="number" 
+                   id="quantity" 
+                   name="quantity" 
+                   required 
+                   min="3" 
+                   placeholder="Minimum 3 kg"
+                   oninvalid="this.setCustomValidity('Minimum donation quantity is 3 kg')"
+                   oninput="this.setCustomValidity('')"
+                   onchange="calculateCharges()">
+
+            <div class="charges-info">
+                <p>Total Charges: ₹<span id="totalCharges">0</span></p>
+            </div>
+
+            <label for="location">Pickup Location:</label>
+            <input type="text" id="location" name="location" required>
+
+            <div class="payment-section">
+                <label for="paymentMode">Payment Mode:</label>
+                <select id="paymentMode" name="payment_mode" required onchange="togglePaymentDetails()">
+                    <option value="online">Online Payment</option>
+                    <option value="offline">Offline Payment</option>
+                </select>
+
+                <div id="onlinePaymentDetails" class="upi-details">
+                    <div class="upi-info">
+                        <p><strong>UPI Payment Details:</strong></p>
+                        <p>UPI ID: dilzchenath@oksbi</p>
+                        <div class="qr-code">
+                            <img src="../uploads/upi-qr.jpg" alt="UPI QR Code" id="qrCode">
+                            <p>Scan QR code or pay to the above UPI ID</p>
+                        </div>
+                    </div>
+                    <div id="paymentProofSection">
+                        <label for="paymentProof">Upload Payment Proof:</label>
+                        <input type="file" id="paymentProof" name="payment_proof" accept="image/*">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Submit Donation</button>
+        </form>
+    </div>
+
+    <script>
+        function calculateCharges() {
+            const quantity = document.getElementById('quantity').value;
+            const ratePerKg = 10;
+            const totalCharges = quantity * ratePerKg;
+            document.getElementById('totalCharges').textContent = totalCharges;
+        }
+
+        function togglePaymentDetails() {
+            const paymentMode = document.getElementById('paymentMode').value;
+            const onlineDetails = document.getElementById('onlinePaymentDetails');
+            const proofInput = document.getElementById('paymentProof');
+
+            if (paymentMode === 'online') {
+                onlineDetails.style.display = 'block';
+                proofInput.required = true;
+            } else {
+                onlineDetails.style.display = 'none';
+                proofInput.required = false;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', togglePaymentDetails);
+
+        document.getElementById("wasteDonationForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            // Create FormData object
+            let formData = new FormData(this);
+
+            // Send data to PHP
+            fetch("process_waste_donation.php", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data.includes("success")) {
+                    // Show success popup
+                    Swal.fire({
+                        title: 'Thank You!',
+                        text: 'Your donation has been successfully registered.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Reset form and charges after clicking OK
+                        this.reset();
+                        document.getElementById('totalCharges').textContent = '0';
+                        togglePaymentDetails(); // Reset payment section
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error processing donation. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

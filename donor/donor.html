@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate Fresh Food</title>
+    <link rel="stylesheet" href="donor.css"> <!-- Link to CSS -->
+    <script defer src="donor.js"></script> <!-- Link to JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Donate Fresh Food</h2>
+        <form id="donationForm">
+            <label for="donorName">Donor Name:</label>
+            <input type="text" id="donorName" name="donor_name" required> <!-- FIXED -->
+
+            <label for="contactNumber">Contact Number:</label>
+            <input type="tel" 
+                   id="contactNumber" 
+                   name="contact_number" 
+                   required 
+                   maxlength="10" 
+                   pattern="[6-9][0-9]{9}" 
+                   placeholder="Enter 10-digit phone number">
+            <div class="error-message" id="phone-error" style="display: none;">
+                Please enter a valid 10-digit mobile number starting with 6-9
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       required 
+                       placeholder="Enter your email ">
+                <div class="error-message" id="email-error"></div>
+            </div>
+
+            <label for="foodName">Food Name:</label>
+            <input type="text" id="foodName" name="food_name" required> <!-- FIXED -->
+
+            <label for="foodType">Food Type:</label>
+            <select id="foodType" name="food_type" required>
+                <option value="">Select Food Type</option>
+                <option value="Vegetables">Vegetables</option>
+                <option value="Fruits">Fruits</option>
+                <option value="Cooked Food">Cooked Food</option>
+                <option value="Packed Food">Packed Food</option>
+                <option value="Bakery Items">Bakery Items</option>
+            </select>
+
+            <label for="quantity">Quantity (in kg):</label>
+            <input type="number" 
+                   id="quantity" 
+                   name="quantity" 
+                   required 
+                   min="3" 
+                   placeholder="Minimum 3 kg"
+                   oninvalid="this.setCustomValidity('Minimum donation quantity is 3 kg')"
+                   oninput="this.setCustomValidity('')">
+
+            <label for="expiryDate">Expiry Date:</label>
+            <div class="date-input-container" style="position: relative;">
+                <input type="text" 
+                       id="expiryDate" 
+                       name="expiry_date" 
+                       placeholder="DD/MM/YYYY"
+                       required
+                       autocomplete="off">
+                <span class="calendar-icon" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                    📅
+                </span>
+            </div>
+
+            <label for="location">Pickup Location:</label>
+            <input type="text" id="location" name="location" required>
+
+            <!-- Add new section for waste food charges -->
+            <div id="wasteChargesSection" style="display: none;">
+                <div class="charges-info">
+                    <p>Waste Disposal Charges:</p>
+                    <p>Rate per kg: ₹10</p>
+                    <p>Total Charges: ₹<span id="totalCharges">0</span></p>
+                </div>
+                <div class="payment-section">
+                    <label for="paymentMode">Payment Mode:</label>
+                    <select id="paymentMode" name="payment_mode">
+                        <option value="online">Online Payment</option>
+                        <option value="offline">Offline Payment</option>
+                    </select>
+                    
+                    <div id="paymentProofSection">
+                        <label for="paymentProof">Upload Payment Proof:</label>
+                        <input type="file" id="paymentProof" name="payment_proof" accept="image/*">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Submit Donation</button>
+        </form>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize flatpickr
+        const dateInput = flatpickr("#expiryDate", {
+            dateFormat: "d/m/Y",
+            minDate: "today",
+            allowInput: true,
+            clickOpens: false,
+            locale: {
+                firstDayOfWeek: 1
+            }
+        });
+
+        // Open calendar when clicking the calendar icon
+        document.querySelector('.calendar-icon').addEventListener('click', function() {
+            dateInput.open();
+        });
+
+        // Manual input handling for date
+        document.getElementById('expiryDate').addEventListener('input', function(e) {
+            if (!dateInput.isOpen) {
+                let value = e.target.value;
+                value = value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2);
+                }
+                if (value.length >= 5) {
+                    value = value.substring(0, 5) + '/' + value.substring(5);
+                }
+                if (value.length > 10) {
+                    value = value.substring(0, 10);
+                }
+                e.target.value = value;
+            }
+        });
+
+        // Phone number validation
+        document.getElementById("contactNumber").addEventListener('input', function() {
+            let phone = this.value;
+            phone = phone.replace(/[^0-9]/g, '');
+            this.value = phone;
+            
+            if (phone.match(/^[6-9][0-9]{9}$/)) {
+                this.classList.remove('invalid');
+                this.classList.add('valid');
+                document.getElementById('phone-error').style.display = 'none';
+            } else {
+                this.classList.remove('valid');
+                this.classList.add('invalid');
+                document.getElementById('phone-error').style.display = 'block';
+            }
+        });
+
+        // Single form submission handler
+        document.getElementById('donationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // First validate the date
+            const dateInput = document.getElementById('expiryDate').value;
+            const parts = dateInput.split('/');
+            
+            if (parts.length === 3) {
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1;
+                const year = parseInt(parts[2]);
+                
+                const date = new Date(year, month, day);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (date < today) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Please enter a future date',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+                
+                if (date.getDate() !== day || date.getMonth() !== month || date.getFullYear() !== year) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Please enter a valid date',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please enter a valid date in DD/MM/YYYY format',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            // Create FormData object
+            let formData = new FormData(this);
+
+            // Send data to PHP
+            fetch("process_donation.php", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data.includes("success")) {
+                    // Show success popup
+                    Swal.fire({
+                        title: 'Thank You!',
+                        text: 'Your donation has been successfully registered.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Reset form after clicking OK
+                        this.reset();
+                        flatpickr("#expiryDate").clear(); // Clear the date picker
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error processing donation. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+        });
+    });
+    </script>
+
+    <style>
+    .date-input-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .date-input-container input {
+        width: 100%;
+        padding: 10px;
+        padding-right: 35px;
+        font-size: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .calendar-icon {
+        font-size: 1.2rem;
+        color: #666;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .calendar-icon:hover {
+        color: #333;
+    }
+
+    /* Flatpickr calendar customization */
+    .flatpickr-calendar {
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .flatpickr-day.selected {
+        background: #28a745 !important;
+        border-color: #28a745 !important;
+    }
+
+    .flatpickr-day.today {
+        border-color: #28a745;
+    }
+    </style>
+
+</body>
+</html>

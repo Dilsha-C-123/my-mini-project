@@ -1,0 +1,8 @@
+.sidebar {
+    position: fixed;
+    height: 100vh;
+    width: 250px;
+}
+.container {
+    margin-left: 260px;
+}
