@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Surplus & Waste Food Management</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Custom Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-section {
+            background-color: #ffffff;
+            padding: 80px 0 20px 0;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-bottom: 50px;
+        }
+
+        .donate-button-container {
+            margin: 60px 0 40px 0;
+        }
+
+        .hero-section .btn {
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            font-weight: 500;
+            border-radius: 50px;
+            background-color: #28a745;
+            border: none;
+            transition: all 0.3s ease;
+            min-width: 250px;
+        }
+
+        .hero-section .btn:hover {
+            background-color: #218838;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .features-section {
+            padding: 20px 0 40px 0;
+            background-color: #ffffff;
+        }
+
+        .features-section h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #343a40;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .feature-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-section p {
+                font-size: 1rem;
+            }
+
+            .features-section h2 {
+                font-size: 1.8rem;
+            }
+
+            .feature-card h3 {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Add margin-bottom to create some space between sections */
+        .hero-section .container {
+            margin-bottom: 20px;
+        }
+
+        /* Add negative margin to pull section up */
+        .features-section .container {
+            margin-top: -20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Surplus & Waste Food Management</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="admin/admin_login.html">Admin (NGO)</a></li>
+                    <li class="nav-item"><a class="nav-link" href="waste-center/waste_center_login.php">Waste Center</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section">
+        <div class="container">
+            <h1>Help Reduce Food Waste & Feed the Needy</h1>
+            <p>Your small effort can make a big impact. Join us in fighting hunger and reducing food waste.</p>
+            <div class="donate-button-container">
+                <a href="./donor/select_donation_type.html" class="btn btn-success btn-lg">Donate Now</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2>How It Works</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <h3>Donate Food</h3>
+                        <p>Share Your Surplus - Help End Hunger!  
+                            Effortlessly donate extra food and make a difference in someone's life today.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <h3>Manage Donations</h3>
+                        <p>Admins efficiently oversee and distribute donations, ensuring every meal reaches those in need.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <h3>Eco-Friendly Disposal</h3>
+                        <p>Waste centers gather expired food and dispose it responsibly to protect the environment.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2025 Surplus & Waste Food Management | All Rights Reserved</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
